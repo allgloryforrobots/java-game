@@ -13,21 +13,31 @@ public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyH;
 
+    /**
+     * Середина текущего окна, игрок всегда находиться по центру окна
+     */
+    public final int screenX;
+    public final int screenY;
+
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
+
+        screenX = gp.screenXCenter;
+        screenY = gp.screenYCenter;
 
         setDefaultValues();
         getPlayerImage();
     }
 
     public void setDefaultValues() {
-        x = 100;
-        y = 100;
+        worldX = gp.tileCountToPx(23);
+        worldY = gp.tileCountToPx(21);
         speed = 4;
         direction = Direction.DOWN;
     }
 
+    /** Создает изображения с кадрами анимации */
     public void getPlayerImage() {
         try {
             up1 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_up_1.png"));
@@ -50,29 +60,32 @@ public class Player extends Entity {
         }
     }
 
+    /** Нажата клавиша движения */
     private boolean isWASDKeyPressed() {
         return keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
     }
 
+    /** По нажатию клавищи движения повернуть игрока и передвинуть в выбранном направлении */
     private void setDirectionAndCoordinate() {
         if (keyH.upPressed) {
             direction = Direction.UP;
-            y -= speed;
+            worldY -= speed;
         }
         else if (keyH.downPressed) {
             direction = Direction.DOWN;
-            y += speed;
+            worldY += speed;
         }
         else if (keyH.leftPressed) {
             direction = Direction.LEFT;
-            x -= speed;
+            worldX -= speed;
         }
         else if (keyH.rightPressed) {
             direction = Direction.RIGHT;
-            x += speed;
+            worldX += speed;
         }
     }
 
+    /** Обновляет кадры анимации движения */
     private void updateMoveSprite() {
         spriteCounter++;
         if (spriteCounter > 12) {
@@ -127,7 +140,7 @@ public class Player extends Entity {
                 break;
         }
 
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 
 }
