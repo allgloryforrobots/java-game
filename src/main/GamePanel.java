@@ -8,7 +8,7 @@ import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    // НАСТРОЙКИ ЭКРАНА
+    /* НАСТРОЙКИ ЭКРАНА */
     final int originalTileSize = 16; // 16х16 tile
     final int scale = 3;
     public final int tileSize = originalTileSize * scale; // 48 * 48 tile
@@ -20,11 +20,11 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = maxScreenCol * tileSize; // 768 pixels
     public final int screenHeight = maxScreenRow * tileSize; // 576 pixels
 
-    /** Середина окна игры */
+    /* Середина окна игры */
     public final int screenXCenter = screenWidth / 2 - halfTileSize;
     public final int screenYCenter = screenHeight / 2 - halfTileSize;
 
-    // НАСТРОЙКИ КАРТЫ МИРА
+    /* НАСТРОЙКИ КАРТЫ МИРА */
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
     public final int worldWidth = maxWorldCol * tileSize;
@@ -35,6 +35,7 @@ public class GamePanel extends JPanel implements Runnable {
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
     Thread gameTread;
+    public CollisionChecker cChecker = new CollisionChecker(this);
     public Player player = new Player(this, keyH);
 
     public GamePanel() {
@@ -46,7 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
-    /**
+    /*
      * Переводит расстояние в тайлах в px
      * @param n tileNumber (x or y)
      * @return offset in px

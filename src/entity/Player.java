@@ -13,7 +13,7 @@ public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyH;
 
-    /**
+    /*
      * Середина текущего окна, игрок всегда находиться по центру окна
      */
     public final int screenX;
@@ -25,6 +25,12 @@ public class Player extends Entity {
 
         screenX = gp.screenXCenter;
         screenY = gp.screenYCenter;
+
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = 32;
+        solidArea.height = 32;
 
         setDefaultValues();
         getPlayerImage();
@@ -55,37 +61,67 @@ public class Player extends Entity {
 
     public void update() {
         if (isWASDKeyPressed()) {
-            setDirectionAndCoordinate();
+
+            setDirection();
+            checkCollision();
+
+            // игрок может двигаться в выбранном направлении?
+            // collision-box игрока не упирается в непроходимый tile?
+            if (!collisionOn) {
+                movePlayerToDirection();
+            }
+
             updateMoveSprite();
         }
     }
 
-    /** Нажата клавиша движения */
+    /* Устанавливает флаг collisionOn: столкнется ли collision-box игрока с непроходимым тайлом */
+    public void checkCollision() {
+        collisionOn = false;
+        gp.cChecker.checkTile(this);
+    }
+
+    /* Двигает игрока в выбранном направлении */
+    public void movePlayerToDirection() {
+        switch (direction) {
+            case UP:
+                worldY -= speed;
+                break;
+            case DOWN:
+                worldY += speed;
+                break;
+            case LEFT:
+                worldX -= speed;
+                break;
+            case RIGHT:
+                worldX += speed;
+                break;
+        }
+    }
+
+
+    /* Нажата клавиша движения */
     private boolean isWASDKeyPressed() {
         return keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
     }
 
-    /** По нажатию клавищи движения повернуть игрока и передвинуть в выбранном направлении */
-    private void setDirectionAndCoordinate() {
+    /* По нажатию клавиши движения повернуть игрока и передвинуть в выбранном направлении */
+    private void setDirection() {
         if (keyH.upPressed) {
             direction = Direction.UP;
-            worldY -= speed;
         }
         else if (keyH.downPressed) {
             direction = Direction.DOWN;
-            worldY += speed;
         }
         else if (keyH.leftPressed) {
             direction = Direction.LEFT;
-            worldX -= speed;
         }
         else if (keyH.rightPressed) {
             direction = Direction.RIGHT;
-            worldX += speed;
         }
     }
 
-    /** Обновляет кадры анимации движения */
+    /* Обновляет кадры анимации движения */
     private void updateMoveSprite() {
         spriteCounter++;
         if (spriteCounter > 12) {
@@ -100,8 +136,6 @@ public class Player extends Entity {
     }
 
     public void draw(Graphics2D g2) {
-//        g2.setColor(Color.white);
-//        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
 
         BufferedImage image = null;
 
