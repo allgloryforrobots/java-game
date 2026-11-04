@@ -10,8 +10,8 @@ public class Main {
         window.setResizable(false);
         window.setTitle("Rise of Underdog");
 
-        GamePanel gamePanel = new GamePanel();
-        window.add(gamePanel);
+        GamePanel gp = new GamePanel();
+        window.add(gp);
 
         // resize window to contain subcomponents
         window.pack();
@@ -20,7 +20,8 @@ public class Main {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
 
-        gamePanel.startGameThread();
+        gp.setupGame();
+        gp.startGameThread();
 
     }
 }

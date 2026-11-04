@@ -65,8 +65,8 @@ public class TileManager {
             tile[1].collision = true;
 
             tile[2] = new Tile();
-            tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ground/water.png"));
-            tile[1].collision = true;
+            tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ground/water.png"));
+            tile[2].collision = true;
 
             tile[3] = new Tile();
             tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/ground/earth.png"));
@@ -91,8 +91,8 @@ public class TileManager {
         while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
 
             int tileNum = mapTileNum[worldCol][worldRow];
-            int worldX = gp.tileCountToPx(worldCol);
-            int worldY = gp.tileCountToPx(worldRow);
+            int worldX = gp.tilesToPx(worldCol);
+            int worldY = gp.tilesToPx(worldRow);
             int screenX = worldX
                     // сколько px игрок прошел от точки 0;0
                     - gp.player.worldX
