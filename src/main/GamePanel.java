@@ -28,16 +28,18 @@ public class GamePanel extends JPanel implements Runnable {
     /* НАСТРОЙКИ КАРТЫ МИРА */
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
-    public final int worldWidth = maxWorldCol * tileSize;
-    public final int worldHeight = maxWorldRow * tileSize;
 
     int FPS = 60;
 
+    /* СИСТЕМА */
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
-    Thread gameTread;
+    Sound sound = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
+    Thread gameTread;
+
+    /* ИГРОВЫЕ СУЩНОСТИ И ОБЪЕКТЫ */
     public Player player = new Player(this, keyH);
     public SuperObject[] obj = new SuperObject[10];
 
@@ -52,6 +54,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void setupGame() {
         aSetter.setObject();
+//        playMusic(0);
     }
 
     /*
@@ -122,4 +125,18 @@ public class GamePanel extends JPanel implements Runnable {
         g2.dispose();
     }
 
+    public void playMusic(int i) {
+        sound.setFile(i);
+        sound.play();
+        sound.loop();
+    }
+
+    public void stopMusic() {
+        sound.stop();
+    }
+
+    public void playSE(int i) {
+        sound.setFile(i);
+        sound.play();
+    }
 }

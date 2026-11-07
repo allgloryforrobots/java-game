@@ -156,11 +156,13 @@ public class Player extends Entity {
 
         switch (type) {
             case KEY:
+                gp.playSE(1);
                 hasKey++;
                 removeObjFromMap(i);
                 break;
             case DOOR:
                 if (hasKey > 0) {
+                    gp.playSE(3);
                     removeObjFromMap(i);
                     hasKey--;
                 }
