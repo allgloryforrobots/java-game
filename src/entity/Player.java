@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.ObjTypes;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,6 +20,8 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
 
+    int hasKey = 0;
+
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
@@ -29,6 +32,8 @@ public class Player extends Entity {
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
 
@@ -63,7 +68,11 @@ public class Player extends Entity {
         if (isWASDKeyPressed()) {
 
             setDirection();
-            checkCollision();
+            checkTileCollision();
+            int objIndex = checkObjCollision();
+            if (objIndex != -1) {
+                pickUpObject(objIndex);
+            }
 
             // игрок может двигаться в выбранном направлении?
             // collision-box игрока не упирается в непроходимый tile?
@@ -75,8 +84,12 @@ public class Player extends Entity {
         }
     }
 
+    public int checkObjCollision() {
+        return gp.cChecker.checkObject(this, true);
+    }
+
     /* Устанавливает флаг collisionOn: столкнется ли collision-box игрока с непроходимым тайлом */
-    public void checkCollision() {
+    public void checkTileCollision() {
         collisionOn = false;
         gp.cChecker.checkTile(this);
     }
@@ -98,7 +111,6 @@ public class Player extends Entity {
                 break;
         }
     }
-
 
     /* Нажата клавиша движения */
     private boolean isWASDKeyPressed() {
@@ -132,6 +144,33 @@ public class Player extends Entity {
                 spriteNum = 1;
             }
             spriteCounter = 0;
+        }
+    }
+
+    public void removeObjFromMap(int i) {
+        gp.obj[i] = null;
+    }
+
+    public void pickUpObject(int i) {
+        ObjTypes type = gp.obj[i].type;
+
+        switch (type) {
+            case KEY:
+                hasKey++;
+                removeObjFromMap(i);
+                break;
+            case DOOR:
+                if (hasKey > 0) {
+                    removeObjFromMap(i);
+                    hasKey--;
+                }
+                break;
+            case CHEST:
+                break;
+            case BOOTS:
+                speed += 1;
+                removeObjFromMap(i);
+                break;
         }
     }
 

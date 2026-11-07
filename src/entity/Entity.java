@@ -28,8 +28,12 @@ public class Entity {
      * 2) персонаж идет вдоль нижнего края стены, верхняя часть тела должна заходить на стену
      */
     public Rectangle solidArea;
-    /*
-     * Столкновение с объектом включено?
+
+    /**
+     * solidArea.x, solidArea.y будут изменены в процессе, поэтому необходимы первоначальные значения
      */
+    public int solidAreaDefaultX, solidAreaDefaultY;
+
+    /* Столкновение с объектом включено? */
     public boolean collisionOn = false;
 }
