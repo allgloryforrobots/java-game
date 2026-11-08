@@ -22,8 +22,6 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
 
-    public int hasKey = 0;
-
     /*
      * Задержка в кадрах после нажатия клавиши движения, чтобы вернуть персонажа в idle позу
      */
@@ -184,32 +182,7 @@ public class Player extends Entity {
         ObjTypes type = gp.obj[i].type;
 
         switch (type) {
-            case KEY:
-                gp.playSE(1);
-                hasKey++;
-                removeObjFromMap(i);
-                gp.ui.showMessage("You got a key");
-                break;
-            case DOOR:
-                if (hasKey > 0) {
-                    gp.playSE(3);
-                    removeObjFromMap(i);
-                    hasKey--;
-                    gp.ui.showMessage("You use a key");
-                } else {
-                    gp.ui.showMessage("You need a key");
-                }
-                break;
-            case BOOTS:
-                speed += 1;
-                removeObjFromMap(i);
-                gp.ui.showMessage("Speed up");
-                break;
-            case CHEST:
-                gp.ui.gameFinished = true;
-                gp.stopMusic();
-                gp.playSE(4);
-                break;
+
         }
     }
 

@@ -1,18 +1,15 @@
 package main;
 
-import object.OBJ_Key;
-
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class UI {
     GamePanel gp;
+    Graphics2D g2;
 
     Font textFont;
     Font bigFont;
     Font textSmall;
 
-    BufferedImage keyImage;
     public boolean messageOn = false;
     public String message = "";
     long messageEndTime = 0;
@@ -25,9 +22,6 @@ public class UI {
         textSmall = new Font("Arial", Font.PLAIN, 30);
         textFont = new Font("Arial", Font.PLAIN, 40);
         bigFont = new Font("Arial", Font.BOLD, 60);
-
-        OBJ_Key key = new OBJ_Key(gp);
-        keyImage = key.image;
     }
 
     public void showMessage(String text) {
@@ -37,64 +31,46 @@ public class UI {
     }
 
     public void draw(Graphics2D g2) {
-        setDefaultTextAntialiasing(g2);
-        setDefaultTextSettings(g2);
+        this.g2 = g2;
+        setDefaultTextAntialiasing();
+        setDefaultTextSettings();
 
-        if (gameFinished) {
-            drawGameTitleScreen(g2);
-            return;
+        if (gp.isGameRuns()) {
+
         }
 
-        drawKeys(g2);
-
-        if (messageOn) {
-            drawMessage(g2);
+        if (gp.isGamePaused()) {
+            drawPauseScreen();
         }
     }
 
-    public void drawGameTitleScreen(Graphics2D g2) {
-        String text;
-        int textLength;
-        int x;
-        int y;
-
-        text = "You found a treasure";
-        g2.setFont(bigFont);
-        textLength = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-        x = gp.screenWidth / 2 - textLength / 2;
-        y = gp.screenHeight / 2 - gp.tilesToPx(3);
+    public void drawPauseScreen() {
+        String text  = "PAUSED";
+        int x = getXForCenteredText(text);
+        int y = gp.screenHeight / 2;
         g2.drawString(text, x, y);
-
-        text = "Congratulations!";
-        g2.setFont(bigFont);
-        textLength = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-        x = gp.screenWidth / 2 - textLength / 2;
-        y = gp.screenHeight / 2 + gp.tilesToPx(3);
-        g2.drawString(text, x, y);
-
-        gp.stopGame();
     }
 
-    public void setDefaultTextAntialiasing(Graphics2D g2) {
-        g2.setRenderingHint(
+    public int getXForCenteredText(String text) {
+        int length = (int) g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return (gp.screenWidth / 2) - (length / 2);
+    }
+
+    public void setDefaultTextAntialiasing() {
+        this.g2.setRenderingHint(
             RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_ON
         );
     }
 
-    public void setDefaultTextSettings(Graphics2D g2) {
-        g2.setFont(textFont);
-        g2.setColor(Color.WHITE);
+    public void setDefaultTextSettings() {
+        this.g2.setFont(textFont);
+        this.g2.setColor(Color.WHITE);
     }
 
-    public void drawKeys(Graphics2D g2) {
-        g2.drawImage(keyImage, gp.tileSize / 2, gp.tileSize / 2, gp.tileSize, gp.tileSize, null);
-        g2.drawString("x = " + gp.player.hasKey, 74, 65);
-    }
-
-    public void drawMessage(Graphics2D g2) {
+    public void drawMessage() {
         gp.setFont(textSmall);
-        g2.drawString(message, gp.tileSize / 2, gp.tileSize * 5);
+        this.g2.drawString(message, gp.tileSize / 2, gp.tileSize * 5);
 
         if (System.nanoTime() >= messageEndTime) {
             messageOn = false;

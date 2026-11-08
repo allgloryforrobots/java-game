@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     /* СИСТЕМА */
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     Sound music = new Sound();
     Sound se = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -45,6 +45,11 @@ public class GamePanel extends JPanel implements Runnable {
     public Player player = new Player(this, keyH);
     public SuperObject[] obj = new SuperObject[10];
 
+    /* СОСТОЯНИЕ ИГРЫ */
+    public int gameState;
+    public final int playState = 1;
+    public final int pauseState = 2;
+
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
@@ -55,14 +60,31 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
-    public void stopGame() {
+    public void endGame() {
         gameTread = null;
     }
 
     public void setupGame() {
         aSetter.setObject();
+        unpauseGame();
 //        playMusic(0);
-//        playMusic(5);
+    }
+
+    public boolean isGamePaused() {
+        return gameState == pauseState;
+    }
+
+    /* Показана карта, включено управление персонажем */
+    public boolean isGameRuns() {
+        return gameState == playState;
+    }
+
+    public void pauseGame() {
+        gameState = pauseState;
+    }
+
+    public void unpauseGame() {
+        gameState = playState;
     }
 
     /*
@@ -108,7 +130,13 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        player.update();
+        if (gameState == playState) {
+            player.update();
+        }
+
+        if (gameState == pauseState) {
+            // nothing now
+        }
     }
 
 
