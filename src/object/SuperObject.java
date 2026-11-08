@@ -1,6 +1,7 @@
 package object;
 
 import main.GamePanel;
+import tile.ImageOptimizer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,9 +19,17 @@ public class SuperObject {
     public int solidAreaDefaultX = 0;
     public int solidAreaDefaultY = 0;
 
+    ImageOptimizer imgOptimizer = new ImageOptimizer();
+    GamePanel gp;
+
+    public SuperObject(GamePanel gp) {
+        this.gp = gp;
+    }
+
     protected void loadImage(String path) {
        try {
-            image = ImageIO.read(getClass().getResourceAsStream(path));
+           image = ImageIO.read(getClass().getResourceAsStream(path));
+           image = imgOptimizer.scaleImage(image, gp.tileSize, gp.tileSize);
        } catch (IOException e) {
            e.printStackTrace();
        }
@@ -36,7 +45,7 @@ public class SuperObject {
                 worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                 worldY - gp.tileSize < gp.player.worldY + gp.player.screenY
         ) {
-            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, screenX, screenY, null);
         }
     }
 }

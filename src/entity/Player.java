@@ -3,6 +3,7 @@ package entity;
 import main.GamePanel;
 import main.KeyHandler;
 import object.ObjTypes;
+import tile.ImageOptimizer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,6 +14,7 @@ public class Player extends Entity {
 
     GamePanel gp;
     KeyHandler keyH;
+    ImageOptimizer imgOptimizer = new ImageOptimizer();;
 
     /*
      * Середина текущего окна, игрок всегда находиться по центру окна
@@ -20,7 +22,12 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
 
-    int hasKey = 0;
+    public int hasKey = 0;
+
+    /*
+     * Задержка в кадрах после нажатия клавиши движения, чтобы вернуть персонажа в idle позу
+     */
+    public int standCounter = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -50,18 +57,26 @@ public class Player extends Entity {
 
     /** Создает изображения с кадрами анимации */
     public void getPlayerImage() {
+        up1 = setup("boy_up_1");
+        up2 = setup("boy_up_2");
+        down1 = setup("boy_down_1");
+        down2 = setup("boy_down_2");
+        left1 = setup("boy_left_1");
+        left2 = setup("boy_left_2");
+        right1 = setup("boy_right_1");
+        right2 = setup("boy_right_2");
+    }
+
+    public BufferedImage setup(String imageName) {
+        BufferedImage image = null;
         try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_down_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/boy_right_2.png"));
+            image = ImageIO.read(getClass().getResourceAsStream("/player/walking_sprites/" + imageName + ".png"));
+            image = imgOptimizer.scaleImage(image, gp.tileSize, gp.tileSize);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return image;
     }
 
     public void update() {
@@ -81,7 +96,21 @@ public class Player extends Entity {
             }
 
             updateMoveSprite();
+        } else {
+            stopMove();
         }
+    }
+
+    public void stopMove() {
+        standCounter++;
+        if (standCounter == 20) {
+            idleSprite();
+            standCounter = 0;
+        }
+    }
+
+    public void idleSprite() {
+        spriteNum = 1;
     }
 
     public int checkObjCollision() {
@@ -159,19 +188,27 @@ public class Player extends Entity {
                 gp.playSE(1);
                 hasKey++;
                 removeObjFromMap(i);
+                gp.ui.showMessage("You got a key");
                 break;
             case DOOR:
                 if (hasKey > 0) {
                     gp.playSE(3);
                     removeObjFromMap(i);
                     hasKey--;
+                    gp.ui.showMessage("You use a key");
+                } else {
+                    gp.ui.showMessage("You need a key");
                 }
-                break;
-            case CHEST:
                 break;
             case BOOTS:
                 speed += 1;
                 removeObjFromMap(i);
+                gp.ui.showMessage("Speed up");
+                break;
+            case CHEST:
+                gp.ui.gameFinished = true;
+                gp.stopMusic();
+                gp.playSE(4);
                 break;
         }
     }
@@ -215,7 +252,7 @@ public class Player extends Entity {
                 break;
         }
 
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
     }
 
 }

@@ -17,6 +17,8 @@ public class Sound {
         soundUrl[2] = getClass().getResource("/sound/powerup.wav");
         soundUrl[3] = getClass().getResource("/sound/unlock.wav");
         soundUrl[4] = getClass().getResource("/sound/fanfare.wav");
+//        soundUrl[5] = getClass().getResource("/sound/blackout-protocol.mp3");
+
     }
 
     public void setFile(int i) {
@@ -38,7 +40,11 @@ public class Sound {
     }
 
     public void stop() {
-        clip.stop();
+        // если вдруг музыка выключена в настройках или тестах
+        if (clip != null) {
+            clip.stop();
+        }
+
     }
 
 }
